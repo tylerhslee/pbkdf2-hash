@@ -1,0 +1,48 @@
+{
+  "_from": "pbkdf2-hash@^1.0.4",
+  "_id": "pbkdf2-hash@1.0.4",
+  "_inBundle": false,
+  "_integrity": "sha1-oWT4INOKhNmkqm4KBoMYIoUAI9A=",
+  "_location": "/pbkdf2-hash",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "pbkdf2-hash@^1.0.4",
+    "name": "pbkdf2-hash",
+    "escapedName": "pbkdf2-hash",
+    "rawSpec": "^1.0.4",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.4"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/pbkdf2-hash/-/pbkdf2-hash-1.0.4.tgz",
+  "_shasum": "a164f820d38a84d9a4aa6e0a06831822850023d0",
+  "_spec": "pbkdf2-hash@^1.0.4",
+  "_where": "/home/tyler/Documents/gravity/api",
+  "author": {
+    "name": "Tyler Lee"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "crypto": "^0.0.3",
+    "dotenv": "^4.0.0",
+    "jsdoc": "^3.5.2",
+    "randbytes": "^0.0.1"
+  },
+  "deprecated": false,
+  "description": "Implementation of the PBKDF2 hashing method.",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0"
+  },
+  "main": "index.js",
+  "name": "pbkdf2-hash",
+  "scripts": {
+    "test": "mocha"
+  },
+  "url": "https://github.com/tylerhslee/pbkdf2-hash",
+  "version": "1.0.4"
+}
