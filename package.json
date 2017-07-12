@@ -27,15 +27,15 @@
   },
   "bundleDependencies": false,
   "dependencies": {
-    "crypto": "^0.0.3",
+    "crypto": "0.0.3",
     "dotenv": "^4.0.0",
-    "jsdoc": "^3.5.2",
     "randbytes": "^0.0.1"
   },
   "deprecated": false,
   "description": "Implementation of the PBKDF2 hashing method.",
   "devDependencies": {
     "chai": "^3.5.0",
+    "jsdoc": "^3.5.2",
     "mocha": "^3.3.0"
   },
   "main": "index.js",
