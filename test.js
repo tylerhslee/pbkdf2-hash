@@ -4,7 +4,6 @@
 
 
 "use strcit";
-require("dotenv").config();
 
 const mocha    = require("mocha")
     , describe = mocha.describe
@@ -17,6 +16,7 @@ const pbkdf = require("./index.js")
 
 const PASSWORD = "password";
 
+
 describe("PBKDF2 Hasher", () => {
     
     describe("Using /dev/urandom as the random source", () => {
@@ -24,7 +24,7 @@ describe("PBKDF2 Hasher", () => {
         it("Creates a hashed pass-phrase", (done) => {
             hasher.hash(PASSWORD, (err, hashed) => {
                 expect(hashed).to.be.an("object");
-                expect(hashed.iter).to.equal(parseInt(process.env.ITERATION));
+                expect(hashed.iter).to.be.a("number");
                 expect(/^\d{5}\:\s+:\s+/.test(hashed.toString()));
                 done();
             });
@@ -48,7 +48,7 @@ describe("PBKDF2 Hasher", () => {
         it("Creates a hashed pass-phrase", (done) => {
             hasher.hash(PASSWORD, (err, hashed) => {
                 expect(hashed).to.be.an("object");
-                expect(hashed.iter).to.equal(parseInt(process.env.ITERATION));
+                expect(hashed.iter).to.be.a("number");
                 expect(/^\d{5}\:\s+:\s+/.test(hashed.toString()));
                 done();
             }, false);

@@ -28,7 +28,6 @@
   "bundleDependencies": false,
   "dependencies": {
     "crypto": "0.0.3",
-    "dotenv": "^4.0.0",
     "randbytes": "^0.0.1"
   },
   "deprecated": false,
