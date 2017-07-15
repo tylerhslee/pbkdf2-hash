@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>DocStrap Index</title>
+	<title>DocStrap Source: docs/scripts/fulltext-search-ui.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -60,65 +60,108 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	
-	
+		<h1 class="page-title">Source: docs/scripts/fulltext-search-ui.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">window.SearcherDisplay = (function($) {
+    /**
+     * This class provides support for displaying quick search text results to users.
+     */
+    function SearcherDisplay() { }
 
+    SearcherDisplay.prototype.init = function() {
+        this._displayQuickSearch();
+    };
 
+    /**
+     * This method creates the quick text search entry in navigation menu and wires all required events.
+     */
+    SearcherDisplay.prototype._displayQuickSearch = function() {
+            var quickSearch = $(document.createElement("iframe")),
+                   body = $("body"),
+                   self = this;
 
+            quickSearch.attr("src", "quicksearch.html");
+            quickSearch.css("width", "0px");
+            quickSearch.css("height", "0px");
 
+            body.append(quickSearch);
 
+            $(window).on("message", function(msg) {
+                var msgData = msg.originalEvent.data;
 
+                if (msgData.msgid != "docstrap.quicksearch.done") {
+                    return;
+                }
 
+                var results = msgData.results || [];
 
+                self._displaySearchResults(results);
+            });
 
+            function startSearch() {
+              var searchTerms = $('#search-input').prop("value");
+              if (searchTerms) {
+                quickSearch[0].contentWindow.postMessage({
+                  "searchTerms": searchTerms,
+                  "msgid": "docstrap.quicksearch.start"
+                }, "*");
+              }
+            }
 
+            $('#search-input').on('keyup', function(evt) {
+              if (evt.keyCode != 13) {
+                return;
+              }
+              startSearch();
+              return false;
+            });
+            $('#search-submit').on('click', function() {
+              startSearch();
+              return false;
+            });
+    };
 
-	
-	
+    /**
+     * This method displays the quick text search results in a modal dialog.
+     */
+    SearcherDisplay.prototype._displaySearchResults = function(results) {
+            var resultsHolder = $($("#searchResults").find(".modal-body")),
+                  fragment = document.createDocumentFragment(),
+                  resultsList = document.createElement("ul");
 
+            resultsHolder.empty();
 
+            for (var idx = 0; idx &lt; results.length; idx++) {
+                var result = results[idx],
+                       item = document.createElement("li"),
+                       link = document.createElement("a");
 
+                link.href = result.id;
+                link.innerHTML = result.title;
 
+                item.appendChild(link)
+                resultsList.appendChild(item);
+            }
 
-    <section class="readme-section">
-        <article><h1>Hashing with PBKDF2</h1><p>This package creates a hash using the PBKDF2 method. </p>
-<p>Random salts are generated using the <code>randbytes</code> package. It can be downloaded on npm <a href="https://www.npmjs.com/package/randbytes">here</a>.</p>
-<h2>Usage</h2><h3><code>Hasher</code> object</h3><p>The <code>Hasher</code> object is what generates hashes. The salt is randomly generated through <code>/dev/urandom</code>.</p>
-<pre class="prettyprint source lang-javascript"><code>const pbkdf = require(&quot;pbkdf2-hash&quot;)
-    , hasher = pbkdf.create();
+            fragment.appendChild(resultsList);
+            resultsHolder.append(fragment);
 
-hasher.hash(&quot;password&quot;, (err, hashed) => {
-    console.log(hashed.toString(hasher.encoding));
-});</code></pre><p>If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check <a href="https://tylerhslee.github.io/pbkdf2-hash/Hasher.html">here</a>. However, this is not recommended and should not be used unless absolutely necessary.</p>
-<h3><code>Encoded</code> and <code>Decoded</code> objects that store the hashed data</h3><p>The <code>hash()</code> method returns an <a href="https://tylerhslee.github.io/pbkdf2-hash/Encoded.html"><code>Encoded</code></a> object, which contains hashed data in Buffers. These data can be decoded into <a href="https://tylerhslee.github.io/pbkdf2-hash/Hasher.html"><code>Decoded</code></a> objects if string vales are needed.</p>
-<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
-    console.log(hashed.toString(hasher.encoding));
+            $("#searchResults").modal({"show": true});
+    };
 
-    // If you want a different encoding scheme...
-    console.log(hashed.toString(&quot;utf8&quot;));
-});</code></pre><p>It can also be used to parse an already stringified hash.</p>
-<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
-    const h1 = hashed;
-    const h2 = hashed.parse(hashed.toString(hasher.encoding), hasher.encoding);
-    assert.equal(JSON.stringify(h1)).equal(JSON.stringify(h2));
-});</code></pre><h3>Comparing hashes</h3><p>You can use the <code>validate()</code> method to compare two pass-phrases. The first argument is the entered password, and the second argument is the hashed password to be compared to.</p>
-<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
-    const old = hashed.toString(hasher.encoding);
-    hasher.validate(&quot;password&quot;, old, (valid) => {
-        return valid;
-    });
-});</code></pre><p>The <code>validate()</code> method uses <code>hasher.encoding</code> by default, but this can be overridden by supplying the optional parameter at the end.</p>
-<pre class="prettyprint source lang-javascript"><code>hasher.validate(..., (valid) => {
-    // Do something
-}, &quot;utf8&quot;);</code></pre><h2>Documentation</h2><p>A full documentation can be found <a href="https://tylerhslee.github.io/pbkdf2-hash/index.html">here</a>.</p></article>
-    </section>
-
-
+    return new SearcherDisplay();
+})($);
+</pre>
+    </article>
+</section>
 
 
 
@@ -129,10 +172,6 @@ hasher.hash(&quot;password&quot;, (err, hashed) => {
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
