@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>DocStrap Source: Hasher.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">DocStrap</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Decoded.html">Decoded</a></li><li><a href="Encoded.html">Encoded</a></li><li><a href="Hasher.html">Hasher</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: Hasher.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">"use strict";
+const crypto = require("crypto");
+const randomSource = require("randbytes").urandom.getInstance();
+const timeSource = require("randbytes").timeRandom.getInstance();
+
+const Encoded = require("./Encoded");
+const Decoded = require("./Decoded");
+
+/**
+ * @constructor
+ * @desc Creates and validates hashes. By default, this class uses 30,000 iterations, Hexadecimal encoding scheme, SHA-512 hashing method, and generates a 512-byte key.
+ * @params {Number} iteration - Number of iterations to run
+ * @params {String} encoding - The default encoding scheme to be used
+ * @params {String} hashMethod - The default hashing method to be implemented by PBKDF2
+ * @params {Number} keyLength - The length of the generated hash in bytes
+ */
+function Hasher (iteration, encoding, hashMethod, keyLength) {
+    // Type validation (dotenv gives iteration as string, so just to be careful)
+    if (typeof iteration !== "number") throw Error("Iteration must be number");
+    this.iter = iteration;
+    
+    this.hashMethod = hashMethod;
+
+    if (typeof keyLength !== "number") throw Error("Key length must be number");
+    this.keylen = keyLength;
+
+    this.encoding = encoding;
+    
+    /**
+     * @type {Number}
+     * @name Hasher~saltByte
+     * @desc Length of the salt in bytes
+     */
+    // Generate 64-byte salt (256/8 = 64)
+    const saltByte = 64;
+    
+    /**
+     * @method
+     * @instance
+     * @param {Hasher~saltCallback} callback - Handles the randomly generated salt
+     * @param {Boolean} [urand=true] - Determines whether to use &lt;code>/dev/urandom&lt;/code> or the time stamp as the random source
+     */
+    this.generateSalt = function (callback, urand=true) {
+        let source = randomSource;
+        if (!urand) source = timeSource;
+
+        source.getRandomBytes(saltByte, (salt) => {
+            callback(salt);
+        });
+    }
+    /**
+     * This callback takes the randomly generated salt and allows it to be handled appropriately.
+     * @callback Hasher~saltCallback
+     * @param {Buffer} salt - Randomly generated salt
+     */
+};
+
+/**
+ * @method
+ * @memberof Hasher
+ * @desc Hashes the provided pass-phrase
+ * @param {String} pwd - Password to hash
+ * @param {Hasher~hashCallback} callback - Handles the hashed object
+ * @param {Boolean} [urand=true] - Determines whether to use &lt;code>/dev/urandom&lt;/code> or the time stamp as the random source
+ */
+Hasher.prototype.hash = function (pwd, callback, urand=true) {
+    this.generateSalt((salt) => {
+        crypto.pbkdf2(pwd, salt, this.iter, this.keylen, this.hashMethod, (err, key) => {
+            if (err) console.error(err);
+            const hashed = new Encoded(key, salt, this.iter);
+            callback(err, hashed);
+        });
+    }, urand)
+};
+/**
+ * This callback takes the generated hash as an {@link Encoded} object. It also handles any errors from the PBKDF2 process.
+ * @callback Hasher~hashCallback
+ * @param {Object} err
+ * @param {Encoded} hashed - The hashed object
+ * @see Encoded
+ */
+
+/**
+ * @method
+ * @memberof Hasher
+ * @param {String} new_ - Given pass-phrase
+ * @param {String} old - The encoded hash string to compare to
+ * @param {Hasher-validatorCallback} callback - Handles the validation result
+ * @param {String=} - The encoding scheme to be used (uses &lt;code>hasher.encoding&lt;/code> as default)
+ * @example
+ * // Create a hash
+ * hasher.hash("password", (err, hashed) => {
+ *     const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme
+ *     hasher.validate("password", old, (valid) => {
+ *         assert.equal(valid, true);
+ *     });
+ * });
+ */
+Hasher.prototype.validate = function (new_, old, callback, enc) {
+    const oldHash = Encoded.parse(old, enc || this.encoding);
+    crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
+        if (err) console.error(err);
+        let valid = false;
+        if (key.length === oldHash.getKey().length &amp;&amp; key.equals(oldHash.getKey())) valid = true;
+        callback(valid);
+    });
+};
+/**
+ * This callback handles the validation result.
+ * @callback Hasher~validatorCallback
+ * @param {Boolean} valid - Validation test result
+ */
+
+
+module.exports = Hasher;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
+	
+		on Fri Jul 14th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

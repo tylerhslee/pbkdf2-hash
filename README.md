@@ -11,9 +11,8 @@ The `Hasher` object is what generates hashes. The salt is randomly generated thr
 const pbkdf = require("pbkdf2-hash")
     , hasher = pbkdf.create();
 
-    hasher.hash("password", (err, hashed) => {
-        console.log(hashed.toString(hasher.encoding));
-    });
+hasher.hash("password", (err, hashed) => {
+    console.log(hashed.toString(hasher.encoding));
 });
 ```
 
@@ -28,7 +27,7 @@ hasher.hash("password", (err, hashed) => {
 However, this is unrecommended and should not be used unless absolutely necessary.
 
 ### `Hashed` object
-The `hash()` method returns a `Hashed` object, which can be converted to a hex string (by default) easily.
+The `hash()` method returns a `Hashed` object, which can be converted to a hex string (by default) easily. The default encoding scheme is stored in `Hashed.encoding` property.
 
 ```javascript
 hasher.hash("password", (err, hashed) => {
@@ -42,7 +41,9 @@ hasher.hash("password", (err, hashed) => {
 It can also be used to parse an already stringified hash.
 ```javascript
 hasher.hash("password", (err, hashed) => {
-    hashed.parse(hashed.toString(hasher.encoding), hasher.encoding) === hashed  // true
+    const h1 = hashed;
+    const h2 = hashed.parse(hashed.toString(hasher.encoding), hasher.encoding);
+    assert.equal(JSON.stringify(h1)).equal(JSON.stringify(h2));
 });
 ```
 
@@ -53,7 +54,7 @@ You can use the `validate()` method to compare two pass-phrases. The first argum
 hasher.hash("password", (err, hashed) => {
     const old = hashed.toString(hasher.encoding);
     hasher.validate("password", old, (valid) => {
-        return valid  // true
+        return valid;
     });
 });
 ```

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>DocStrap Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">DocStrap</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Decoded.html">Decoded</a></li><li><a href="Encoded.html">Encoded</a></li><li><a href="Hasher.html">Hasher</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>Hashing with PBKDF2</h1><p>This package creates a hash using the PBKDF2 method. By default, it iterates on 64-bit SHA256 hash.</p>
+<p>Random salts are generated using the <code>randbytes</code> package. It can be downloaded on npm <a href="https://www.npmjs.com/package/randbytes">here</a>.</p>
+<h2>Usage</h2><h3><code>Hasher</code> object</h3><p>The <code>Hasher</code> object is what generates hashes. The salt is randomly generated through <code>/dev/urandom</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const pbkdf = require(&quot;pbkdf2-hash&quot;)
+    , hasher = pbkdf.create();
+
+hasher.hash(&quot;password&quot;, (err, hashed) => {
+    console.log(hashed.toString(hasher.encoding));
+});</code></pre><p>If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. To do so, you simply have to pass <code>false</code> to the method:</p>
+<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
+    // Do something
+}, false);</code></pre><p>However, this is unrecommended and should not be used unless absolutely necessary.</p>
+<h3><code>Hashed</code> object</h3><p>The <code>hash()</code> method returns a <code>Hashed</code> object, which can be converted to a hex string (by default) easily. The default encoding scheme is stored in <code>Hashed.encoding</code> property.</p>
+<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
+    console.log(hashed.toString(hasher.encoding));
+
+    // If you want a different encoding scheme...
+    console.log(hashed.toString(&quot;utf8&quot;));
+});</code></pre><p>It can also be used to parse an already stringified hash.</p>
+<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
+    const h1 = hashed;
+    const h2 = hashed.parse(hashed.toString(hasher.encoding), hasher.encoding);
+    assert.equal(JSON.stringify(h1)).equal(JSON.stringify(h2));
+});</code></pre><h3>Comparing hashes</h3><p>You can use the <code>validate()</code> method to compare two pass-phrases. The first argument is the entered password, and the second argument is the hashed password to be compared to.</p>
+<pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
+    const old = hashed.toString(hasher.encoding);
+    hasher.validate(&quot;password&quot;, old, (valid) => {
+        return valid;
+    });
+});</code></pre><p>The <code>validate()</code> method uses <code>hasher.encoding</code> by default, but this can be overridden by supplying the optional parameter at the end.</p>
+<pre class="prettyprint source lang-javascript"><code>hasher.validate(..., (valid) => {
+    // Do something
+}, &quot;utf8&quot;);</code></pre></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
+	
+		on Fri Jul 14th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
