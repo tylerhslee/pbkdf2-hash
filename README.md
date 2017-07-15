@@ -16,7 +16,7 @@ hasher.hash("password", (err, hashed) => {
 });
 ```
 
-If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check [here](https://tylerhslee.github.io/pbkdf2-hash/Hasher.html). However, this is not recommended and should not be used unless absolutely necessary.
+If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check [here](https://tylerhslee.github.io/pbkdf2-hash/Hasher.html#hash_anchor). However, this is not recommended and should not be used unless absolutely necessary.
 
 ### `Encoded` and `Decoded` objects that store the hashed data
 The `hash()` method returns an [`Encoded`](https://tylerhslee.github.io/pbkdf2-hash/Encoded.html) object, which contains hashed data in Buffers. These data can be decoded into [`Decoded`](https://tylerhslee.github.io/pbkdf2-hash/Hasher.html) objects if string vales are needed.

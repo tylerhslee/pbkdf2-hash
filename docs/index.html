@@ -94,7 +94,7 @@
 
 hasher.hash(&quot;password&quot;, (err, hashed) => {
     console.log(hashed.toString(hasher.encoding));
-});</code></pre><p>If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check <a href="https://tylerhslee.github.io/pbkdf2-hash/Hasher.html">here</a>. However, this is not recommended and should not be used unless absolutely necessary.</p>
+});</code></pre><p>If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check <a href="https://tylerhslee.github.io/pbkdf2-hash/Hasher.html#hash_anchor">here</a>. However, this is not recommended and should not be used unless absolutely necessary.</p>
 <h3><code>Encoded</code> and <code>Decoded</code> objects that store the hashed data</h3><p>The <code>hash()</code> method returns an <a href="https://tylerhslee.github.io/pbkdf2-hash/Encoded.html"><code>Encoded</code></a> object, which contains hashed data in Buffers. These data can be decoded into <a href="https://tylerhslee.github.io/pbkdf2-hash/Hasher.html"><code>Decoded</code></a> objects if string vales are needed.</p>
 <pre class="prettyprint source lang-javascript"><code>hasher.hash(&quot;password&quot;, (err, hashed) => {
     console.log(hashed.toString(hasher.encoding));
