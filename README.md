@@ -1,5 +1,5 @@
 # Hashing with PBKDF2
-This package creates a hash using the PBKDF2 method. By default, it iterates on 64-bit SHA256 hash.
+This package creates a hash using the PBKDF2 method. 
 
 Random salts are generated using the `randbytes` package. It can be downloaded on npm [here](https://www.npmjs.com/package/randbytes).
 
@@ -16,18 +16,10 @@ hasher.hash("password", (err, hashed) => {
 });
 ```
 
-If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. To do so, you simply have to pass `false` to the method:
+If you are on a non-UNIX system, you can choose to generate random salt with a time stamp instead. For more information, check [here](https://tylerhslee.github.io/pbkdf2-hash/Hasher.html). However, this is not recommended and should not be used unless absolutely necessary.
 
-```javascript
-hasher.hash("password", (err, hashed) => {
-    // Do something
-}, false);
-```
-
-However, this is unrecommended and should not be used unless absolutely necessary.
-
-### `Hashed` object
-The `hash()` method returns a `Hashed` object, which can be converted to a hex string (by default) easily. The default encoding scheme is stored in `Hashed.encoding` property.
+### `Encoded` and `Decoded` objects that store the hashed data
+The `hash()` method returns an [`Encoded`](https://tylerhslee.github.io/pbkdf2-hash/Encoded.html) object, which contains hashed data in Buffers. These data can be decoded into [`Decoded`](https://tylerhslee.github.io/pbkdf2-hash/Hasher.html) objects if string vales are needed.
 
 ```javascript
 hasher.hash("password", (err, hashed) => {
@@ -66,3 +58,6 @@ hasher.validate(..., (valid) => {
     // Do something
 }, "utf8");
 ```
+
+## Documentation
+A full documentation can be found [here](https://tylerhslee.github.io/pbkdf2-hash/index.html).
