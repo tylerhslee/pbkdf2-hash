@@ -47,5 +47,5 @@
     "test": "mocha"
   },
   "url": "https://github.com/tylerhslee/pbkdf2-hash",
-  "version": "2.1.2"
+  "version": "2.1.3"
 }
