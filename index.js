@@ -7,7 +7,7 @@
 
 "use strict";
 
-const Hasher = require("./Hasher");
+const Hasher = require("./lib/Hasher");
 
 const ITERATION = 30000;
 const ENCODING = "hex";
