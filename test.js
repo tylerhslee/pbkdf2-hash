@@ -6,7 +6,7 @@
 "use strcit";
 
 const mocha    = require("mocha")
-    , describe = mocha.describe
+    , Describe = mocha.describe
     , it       = mocha.it;
 
 const expect = require("chai").expect;
@@ -18,7 +18,8 @@ const PASSWORD = "password";
 
 
 describe("PBKDF2 Hasher", () => {
-    
+    // Add support for Windows OS
+    if (process.platform === "win32") describe = Describe.skip;
     describe("Using /dev/urandom as the random source", () => {
 
         it("Creates a hashed pass-phrase", (done) => {
@@ -42,7 +43,8 @@ describe("PBKDF2 Hasher", () => {
         });
 
     });
-
+    
+    if (process.platform === "win32") describe = Describe;
     describe("Using timeRandom as the random source", () => {
 
         it("Creates a hashed pass-phrase", (done) => {
