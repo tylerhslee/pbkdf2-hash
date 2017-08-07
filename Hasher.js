@@ -4,7 +4,6 @@ const randomSource = require("randbytes").urandom.getInstance();
 const timeSource = require("randbytes").timeRandom.getInstance();
 
 const Encoded = require("./Encoded");
-const Decoded = require("./Decoded");
 
 /**
  * @constructor
@@ -15,45 +14,45 @@ const Decoded = require("./Decoded");
  * @params {Number} keyLength - The length of the generated hash in bytes
  */
 function Hasher (iteration, encoding, hashMethod, keyLength) {
-    // Type validation (dotenv gives iteration as string, so just to be careful)
-    if (typeof iteration !== "number") throw Error("Iteration must be number");
-    this.iter = iteration;
+  // Type validation (dotenv gives iteration as string, so just to be careful)
+  if (typeof iteration !== "number") throw Error("Iteration must be number");
+  this.iter = iteration;
     
-    this.hashMethod = hashMethod;
+  this.hashMethod = hashMethod;
 
-    if (typeof keyLength !== "number") throw Error("Key length must be number");
-    this.keylen = keyLength;
+  if (typeof keyLength !== "number") throw Error("Key length must be number");
+  this.keylen = keyLength;
 
-    this.encoding = encoding;
+  this.encoding = encoding;
     
-    /**
+  /**
      * @type {Number}
      * @name Hasher~saltByte
      * @desc Length of the salt in bytes
      */
-    // Generate 64-byte salt (256/8 = 64)
-    const saltByte = 64;
+  // Generate 64-byte salt (256/8 = 64)
+  const saltByte = 64;
     
-    /**
+  /**
      * @method
      * @instance
      * @param {Hasher~saltCallback} callback - Handles the randomly generated salt
      * @param {Boolean} [urand=true] - Determines whether to use <code>/dev/urandom</code> or the time stamp as the random source
      */
-    this.generateSalt = function (callback, urand=true) {
-        let source = randomSource;
-        if (!urand) source = timeSource;
+  this.generateSalt = function (callback, urand=true) {
+    let source = randomSource;
+    if (!urand) source = timeSource;
 
-        source.getRandomBytes(saltByte, (salt) => {
-            callback(salt);
-        });
-    }
-    /**
+    source.getRandomBytes(saltByte, (salt) => {
+      callback(salt);
+    });
+  };
+  /**
      * This callback takes the randomly generated salt and allows it to be handled appropriately.
      * @callback Hasher~saltCallback
      * @param {Buffer} salt - Randomly generated salt
      */
-};
+}
 
 /**
  * @method
@@ -64,14 +63,15 @@ function Hasher (iteration, encoding, hashMethod, keyLength) {
  * @param {Boolean} [urand=true] - Determines whether to use <code>/dev/urandom</code> or the time stamp as the random source
  */
 Hasher.prototype.hash = function (pwd, callback, urand=true) {
-    this.generateSalt((salt) => {
-        crypto.pbkdf2(pwd, salt, this.iter, this.keylen, this.hashMethod, (err, key) => {
-            if (err) console.error(err);
-            const hashed = new Encoded(key, salt, this.iter);
-            callback(err, hashed);
-        });
-    }, urand)
+  this.generateSalt((salt) => {
+    crypto.pbkdf2(pwd, salt, this.iter, this.keylen, this.hashMethod, (err, key) => {
+      if (err) return callback(err);
+      const hashed = new Encoded(key, salt, this.iter);
+      callback(err, hashed);
+    });
+  }, urand);
 };
+
 /**
  * This callback takes the generated hash as an {@link Encoded} object. It also handles any errors from the PBKDF2 process.
  * @callback Hasher~hashCallback
@@ -97,13 +97,13 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
  * });
  */
 Hasher.prototype.validate = function (new_, old, callback, enc) {
-    const oldHash = Encoded.parse(old, enc || this.encoding);
-    crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
-        if (err) console.error(err);
-        let valid = false;
-        if (key.length === oldHash.getKey().length && key.equals(oldHash.getKey())) valid = true;
-        callback(valid);
-    });
+  const oldHash = Encoded.parse(old, enc || this.encoding);
+  crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
+    if (err) return callback(err);
+    let valid = false;
+    if (key.length === oldHash.getKey().length && key.equals(oldHash.getKey())) valid = true;
+    callback(null, valid);
+  });
 };
 /**
  * This callback handles the validation result.
