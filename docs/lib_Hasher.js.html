@@ -164,7 +164,7 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
 
 /**
  *******************************************************************************
- * @deprecated since v2.2.0
+ * DEPRECATED since v2.2.0 in favor of {@link Hasher#verify}
  *******************************************************************************
  * @method
  * @memberof Hasher
@@ -190,10 +190,10 @@ Hasher.prototype.validate = function (new_, old, callback, enc) {
   });
 };
 /**
- * @deprecated since v2.2.0
  * This callback handles the validation result.
  * @callback Hasher~validatorCallback
  * @param {Boolean} valid - Validation test result
+ * @deprecated since v2.2.0
  */
 
 /**
