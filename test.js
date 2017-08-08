@@ -7,7 +7,7 @@ const mocha    = require("mocha")
 
 const expect = require("chai").expect;
 
-const pbkdf = require("./index.js")
+const pbkdf = require("./index")
   , hasher = pbkdf.create()
   , hasherAsync = pbkdf.createAsync();
 
