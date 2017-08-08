@@ -26,19 +26,19 @@ function Hasher (iteration, encoding, hashMethod, keyLength) {
   this.encoding = encoding;
     
   /**
-     * @type {Number}
-     * @name Hasher~saltByte
-     * @desc Length of the salt in bytes
-     */
+   * @type {Number}
+   * @name Hasher~saltByte
+   * @desc Length of the salt in bytes
+   */
   // Generate 64-byte salt (256/8 = 64)
   const saltByte = 64;
     
   /**
-     * @method
-     * @instance
-     * @param {Hasher~saltCallback} callback - Handles the randomly generated salt
-     * @param {Boolean} [urand=true] - Determines whether to use <code>/dev/urandom</code> or the time stamp as the random source
-     */
+   * @method
+   * @instance
+   * @param {Hasher~saltCallback} callback - Handles the randomly generated salt
+   * @param {Boolean} [urand=true] - Determines whether to use <code>/dev/urandom</code> or the time stamp as the random source
+   */
   this.generateSalt = function (callback, urand=true) {
     let source = randomSource;
     if (!urand) source = timeSource;
@@ -48,10 +48,10 @@ function Hasher (iteration, encoding, hashMethod, keyLength) {
     });
   };
   /**
-     * This callback takes the randomly generated salt and allows it to be handled appropriately.
-     * @callback Hasher~saltCallback
-     * @param {Buffer} salt - Randomly generated salt
-     */
+   * This callback takes the randomly generated salt and allows it to be handled appropriately.
+   * @callback Hasher~saltCallback
+   * @param {Buffer} salt - Randomly generated salt
+   */
 }
 
 /**
@@ -82,7 +82,7 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
 
 /**
  *******************************************************************************
- * DEPRECATED since v2.2.0
+ * @deprecated since v2.2.0
  *******************************************************************************
  * @method
  * @memberof Hasher
@@ -108,6 +108,7 @@ Hasher.prototype.validate = function (new_, old, callback, enc) {
   });
 };
 /**
+ * @deprecated since v2.2.0
  * This callback handles the validation result.
  * @callback Hasher~validatorCallback
  * @param {Boolean} valid - Validation test result
@@ -119,7 +120,7 @@ Hasher.prototype.validate = function (new_, old, callback, enc) {
  * @param {String} new_ - Given pass-phrase
  * @param {String} old - The encoded hash string to compare to
  * @param {String=} - The encoding scheme to be used (uses <code>hasher.encoding</code> as default)
- * @param {Hasher-validatorCallback} callback - Handles the validation result
+ * @param {Hasher-verifierCallback} callback - Handles the verification result
  * @example
  * // Create a hash
  * hasher.hash("password", (err, hashed) => {
@@ -130,7 +131,6 @@ Hasher.prototype.validate = function (new_, old, callback, enc) {
  *   });
  * });
  */
-
 Hasher.prototype.verify = function (new_, old, enc, callback) {
   if (typeof enc === "function") {
     callback = enc;
@@ -148,6 +148,11 @@ Hasher.prototype.verify = function (new_, old, enc, callback) {
     callback(null, valid);
   });
 };
-
+/**
+ * This callback handles the verification result.
+ * @callback Hasher~verifierCallback
+ * @param {Object} err
+ * @param {Boolean} valid - verification test result
+ */
 
 module.exports = Hasher;
