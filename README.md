@@ -40,24 +40,53 @@ hasher.hash("password", (err, hashed) => {
 ```
 
 ### Comparing hashes
-You can use the `validate()` method to compare two pass-phrases. The first argument is the entered password, and the second argument is the hashed password to be compared to.
+You can use the `verify()` method to compare two pass-phrases. The first argument is the entered password, and the second argument is the hashed password to be compared to.
 
 ```javascript
 hasher.hash("password", (err, hashed) => {
     const old = hashed.toString(hasher.encoding);
-    hasher.validate("password", old, (valid) => {
-        return valid;
+    hasher.validate("password", old, (err, valid) => {
+        if (err) console.error(err);
+        console.log(valid);  // true
     });
 });
 ```
 
-The `validate()` method uses `hasher.encoding` by default, but this can be overridden by supplying the optional parameter at the end.
+The `verify()` method uses `hasher.encoding` by default, but this can be overridden by supplying the optional parameter at the end.
 
 ```javascript
-hasher.validate(..., (valid) => {
+hasher.verify(..., (err, valid) => {
+    if (err) console.error(err);
     // Do something
 }, "utf8");
 ```
 
+### Asynchronous Hasher
+This module also makes it possible to work with promises.
+
+```javascript
+const hasherAsync = require("pbkdf2-hash").createAsync();
+
+hasherAsync.hash("password")
+    .then(hashed => { /* Do something */  })
+    .catch(err => { /* Handle error */ });
+
+hasherAsync.hash("password")
+    .then(hashed => {
+        const old = hashed.toString(hasherAsync.encoding);
+        hasherAsync.verify("password", old)
+            .then(valid => { console.log(valid);  // true })
+            .catch(err => { /* Handle error */ });
+    })
+    .catch(err => { /* Handle error */ });
+```
 ## Documentation
 A full documentation can be found [here](https://tylerhslee.github.io/pbkdf2-hash/index.html).
+
+## Changelog
+### Version 2.2.0
+#### Deprecated
+  * `hasher.validate` method has been deprecated in favor of `hasher.verify`. This change has been made to promisify the API. The usage is only slightly different - `hasher.verify` pass an `Error` object in addition to the `valid` parameter.
+
+#### Added
+  * `hasher.hashAsync` method has been added as a way to work with promises.

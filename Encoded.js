@@ -11,9 +11,9 @@ const Decoded = require("./Decoded");
  * @param {Number} iter - The Number of PBKDF2 iterations
  */
 function Encoded (key, salt, iter) {
-    this.key = key;
-    this.salt = salt;
-    this.iter = iter;
+  this.key = key;
+  this.salt = salt;
+  this.iter = iter;
 }
 
 /**
@@ -25,11 +25,11 @@ function Encoded (key, salt, iter) {
  * @returns {Encoded} The Encoded object
  */
 Encoded.parse = function (pass, enc) {
-    const arr = pass.split(":");
-    const key = new Buffer(arr[2], enc);
-    const salt = new Buffer(arr[1], enc);
-    const iter = parseInt(arr[0]);
-    return new Encoded(key, salt, iter);
+  const arr = pass.split(":");
+  const key = new Buffer(arr[2], enc);
+  const salt = new Buffer(arr[1], enc);
+  const iter = parseInt(arr[0]);
+  return new Encoded(key, salt, iter);
 };
 
 /**
@@ -41,11 +41,11 @@ Encoded.parse = function (pass, enc) {
  * @see Decoded
  */
 Encoded.prototype.decode = function (enc) {
-    const decodedKey = this.getKey().toString(enc).toUpperCase();
-    const decodedSalt = this.getSalt().toString(enc).toUpperCase();
-    const iter = this.getIteration();
-    return new Decoded(decodedKey, decodedSalt, iter);
-}
+  const decodedKey = this.getKey().toString(enc).toUpperCase();
+  const decodedSalt = this.getSalt().toString(enc).toUpperCase();
+  const iter = this.getIteration();
+  return new Decoded(decodedKey, decodedSalt, iter);
+};
 
 /**
  * @method
@@ -56,9 +56,9 @@ Encoded.prototype.decode = function (enc) {
  * @see Decoded#toString
  */
 Encoded.prototype.toString = function (enc) {
-    const decoded = this.decode(enc);
-    return decoded.toString();
-}
+  const decoded = this.decode(enc);
+  return decoded.toString();
+};
 
 /**
  * @method
@@ -66,8 +66,8 @@ Encoded.prototype.toString = function (enc) {
  * @returns {Buffer}
  */
 Encoded.prototype.getKey = function () {
-    return this.key;
-}
+  return this.key;
+};
 
 /**
  * @method
@@ -75,8 +75,8 @@ Encoded.prototype.getKey = function () {
  * @param {Buffer} key
  */
 Encoded.prototype.setKey = function (key) {
-    this.key = key;
-}
+  this.key = key;
+};
 
 /**
  * @method
@@ -84,8 +84,8 @@ Encoded.prototype.setKey = function (key) {
  * @returns {Buffer}
  */
 Encoded.prototype.getSalt = function () {
-    return this.salt;
-}
+  return this.salt;
+};
 
 /**
  * @method
@@ -93,8 +93,8 @@ Encoded.prototype.getSalt = function () {
  * @param {Buffer} salt
  */
 Encoded.prototype.setSalt = function (salt) {
-    this.salt = salt;
-}
+  this.salt = salt;
+};
 
 /**
  * @method
@@ -102,8 +102,8 @@ Encoded.prototype.setSalt = function (salt) {
  * @returns {Number}
  */
 Encoded.prototype.getIteration = function () {
-    return this.iter;
-}
+  return this.iter;
+};
 
 /**
  * @method
@@ -111,8 +111,8 @@ Encoded.prototype.getIteration = function () {
  * @param {Number} iter
  */
 Encoded.prototype.setIteration = function (iter) {
-    this.iter = iter;
-}
+  this.iter = iter;
+};
 
 
 module.exports = Encoded;

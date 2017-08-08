@@ -35,7 +35,8 @@ describe("PBKDF2 Hasher", () => {
       hasher.hash(PASSWORD, (err, hashed) => {
         if (err) console.error(err);
         const old = hashed.toString(hasher.encoding);
-        hasher.validate(PASSWORD, old, (err, valid) => {
+        hasher.verify(PASSWORD, old, (err, valid) => {
+          if (err) console.error(err);
           expect(valid).to.equal(true);
           done();
         });
@@ -58,27 +59,17 @@ describe("PBKDF2 Hasher", () => {
   });
 
   describe("Using Async/await", () => {
-        
+    // Using try/catch block with async/await and mocha doens't really work.  
     it("creates a hashed pass-phrase", async () => {
-      try {
         const hashed = await hasherAsync.hash(PASSWORD);
         expect(hashed.iter).to.be.a("number");
-      }
-      catch (err) {
-        console.error(err);
-      }
     });
 
     it("compares two pass-phrases", async () => {
-      const old = await hasherAsync.hash(PASSWORD).toString(hasherAsync.encoding);
-      try {
-        const valid = await hasherAsync.validate(PASSWORD, old);
-        expect(valid).to.equal(true);
-      }
-      catch (err) {
-        console.error(err);
-      }
-    })
+      const old = (await hasherAsync.hash(PASSWORD)).toString(hasherAsync.encoding);
+      const valid = await hasherAsync.verify(PASSWORD, old);
+      expect(valid).to.equal(true);
+    });
 
   });
 

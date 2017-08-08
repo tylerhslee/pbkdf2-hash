@@ -47,12 +47,12 @@ exports.createAsync = function (args) {
     });
   };
 
-  hasherAsync.validate = function (new_, old, enc) {
+  hasherAsync.verify = function (new_, old, enc) {
     return new Promise((fulfill, reject) => {
-      hasher.validate(new_, old, function (err, valid) {
+      hasher.verify(new_, old, enc, function (err, valid) {
         if (err) reject(err);
         else fulfill(valid);
-      }, enc);
+      });
     });
   };
 

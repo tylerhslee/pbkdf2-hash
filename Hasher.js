@@ -81,6 +81,9 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
  */
 
 /**
+ *******************************************************************************
+ * DEPRECATED since v2.2.0
+ *******************************************************************************
  * @method
  * @memberof Hasher
  * @param {String} new_ - Given pass-phrase
@@ -99,10 +102,9 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
 Hasher.prototype.validate = function (new_, old, callback, enc) {
   const oldHash = Encoded.parse(old, enc || this.encoding);
   crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
-    if (err) return callback(err);
     let valid = false;
     if (key.length === oldHash.getKey().length && key.equals(oldHash.getKey())) valid = true;
-    callback(null, valid);
+    callback(valid);
   });
 };
 /**
@@ -110,6 +112,42 @@ Hasher.prototype.validate = function (new_, old, callback, enc) {
  * @callback Hasher~validatorCallback
  * @param {Boolean} valid - Validation test result
  */
+
+/**
+ * @method
+ * @memberof Hasher
+ * @param {String} new_ - Given pass-phrase
+ * @param {String} old - The encoded hash string to compare to
+ * @param {String=} - The encoding scheme to be used (uses <code>hasher.encoding</code> as default)
+ * @param {Hasher-validatorCallback} callback - Handles the validation result
+ * @example
+ * // Create a hash
+ * hasher.hash("password", (err, hashed) => {
+ *   const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme
+ *   hasher.verify("password", old, (err, valid) => {
+ *     if (err) console.error(err);
+ *     assert.equal(valid, true);
+ *   });
+ * });
+ */
+
+Hasher.prototype.verify = function (new_, old, enc, callback) {
+  if (typeof enc === "function") {
+    callback = enc;
+    enc = this.encoding;
+  }
+  if (!enc) {
+    // enc could be null if called in async
+    enc = this.encoding;
+  }
+  const oldHash = Encoded.parse(old, enc);
+  crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
+    if (err) return callback(err);
+    let valid = false;
+    if (key.length === oldHash.getKey().length && key.equals(oldHash.getKey())) valid = true;
+    callback(null, valid);
+  });
+};
 
 
 module.exports = Hasher;
