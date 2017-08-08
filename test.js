@@ -15,7 +15,6 @@ const PASSWORD = "password";
 
 
 describe("PBKDF2 Hasher", () => {
-<<<<<<< HEAD
     
   describe("Using /dev/urandom as the random source", () => {
 
