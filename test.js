@@ -17,7 +17,7 @@ const PASSWORD = "password";
 describe("PBKDF2 Hasher", () => {
     
   describe("Using /dev/urandom as the random source", () => {
-
+    
     it("Creates a hashed pass-phrase", (done) => {
       hasher.hash(PASSWORD, (err, hashed) => {
         expect(hashed).to.be.an("object");
