@@ -146,7 +146,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-19">line 19</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-18">line 18</a>
 			</li>
 		</ul>
 	</dd>
@@ -255,7 +255,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-31">line 31</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-30">line 30</a>
 			</li>
 		</ul>
 	</dd>
@@ -331,7 +331,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="Hasher.html#~saltCallback">Hasher~saltCallback</a></span>
+<span class="param-type">Hasher~saltCallback</span>
 
 
 
@@ -439,7 +439,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-45">line 45</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-44">line 44</a>
 			</li>
 		</ul>
 	</dd>
@@ -669,7 +669,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-68">line 68</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-67">line 67</a>
 			</li>
 		</ul>
 	</dd>
@@ -708,6 +708,12 @@
 </dt>
 <dd>
 
+    
+    <div class="description">
+        <hr>
+<p>DEPRECATED since v2.2.0</p>
+<hr>
+    </div>
     
 
     
@@ -911,7 +917,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-101">line 101</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-104">line 104</a>
 			</li>
 		</ul>
 	</dd>
@@ -940,7 +946,268 @@
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">// Create a hashhasher.hash(&quot;password&quot;, (err, hashed) =&gt; {    const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme    hasher.validate(&quot;password&quot;, old, (valid) =&gt; {        assert.equal(valid, true);    });});</pre>
+    <pre class="sunlight-highlight-javascript">// Create a hash
+hasher.hash(&quot;password&quot;, (err, hashed) =&gt; {
+    const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme
+    hasher.validate(&quot;password&quot;, old, (valid) =&gt; {
+        assert.equal(valid, true);
+    });
+});</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="verify"><span class="type-signature"></span>verify(new_, old [, enc], callback)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>new_</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Given pass-phrase</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>old</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The encoded hash string to compare to</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>enc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The encoding scheme to be used (uses <code>hasher.encoding</code> as default)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Hasher-validatorCallback</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Handles the validation result</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
+				 <a href="lib_Hasher.js.html#sunlight-1-line-136">line 136</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Create a hash
+hasher.hash(&quot;password&quot;, (err, hashed) =&gt; {
+  const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme
+  hasher.verify(&quot;password&quot;, old, (err, valid) =&gt; {
+    if (err) console.error(err);
+    assert.equal(valid, true);
+  });
+});</pre>
 
 
     
@@ -1125,144 +1392,6 @@
                 
 <hr>
 <dt>
-    <h4 class="name" id="~saltCallback"><span class="type-signature"></span>saltCallback(salt)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>This callback takes the randomly generated salt and allows it to be handled appropriately.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>salt</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Buffer</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Randomly generated salt</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-53">line 53</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-            
-                
-<hr>
-<dt>
     <h4 class="name" id="~validatorCallback"><span class="type-signature"></span>validatorCallback(valid)</h4>
     
     
@@ -1368,7 +1497,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="lib_Hasher.js.html">lib/Hasher.js</a>,
-				 <a href="lib_Hasher.js.html#sunlight-1-line-110">line 110</a>
+				 <a href="lib_Hasher.js.html#sunlight-1-line-112">line 112</a>
 			</li>
 		</ul>
 	</dd>
@@ -1449,7 +1578,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
 	
-		on Sun Jul 16th 2017
+		on Mon Aug 7th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

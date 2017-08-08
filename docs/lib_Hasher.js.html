@@ -85,7 +85,6 @@ if (process.platform !== "win32")
     randomSource = require("randbytes").urandom.getInstance();
 
 const Encoded = require("./Encoded");
-const Decoded = require("./Decoded");
 
 /**
  * @constructor
@@ -96,45 +95,45 @@ const Decoded = require("./Decoded");
  * @params {Number} keyLength - The length of the generated hash in bytes
  */
 function Hasher (iteration, encoding, hashMethod, keyLength) {
-    // Type validation (dotenv gives iteration as string, so just to be careful)
-    if (typeof iteration !== "number") throw Error("Iteration must be number");
-    this.iter = iteration;
+  // Type validation (dotenv gives iteration as string, so just to be careful)
+  if (typeof iteration !== "number") throw Error("Iteration must be number");
+  this.iter = iteration;
     
-    this.hashMethod = hashMethod;
+  this.hashMethod = hashMethod;
 
-    if (typeof keyLength !== "number") throw Error("Key length must be number");
-    this.keylen = keyLength;
+  if (typeof keyLength !== "number") throw Error("Key length must be number");
+  this.keylen = keyLength;
 
-    this.encoding = encoding;
+  this.encoding = encoding;
     
-    /**
+  /**
      * @type {Number}
      * @name Hasher~saltByte
      * @desc Length of the salt in bytes
      */
-    // Generate 64-byte salt (256/8 = 64)
-    const saltByte = 64;
+  // Generate 64-byte salt (256/8 = 64)
+  const saltByte = 64;
     
-    /**
+  /**
      * @method
      * @instance
      * @param {Hasher~saltCallback} callback - Handles the randomly generated salt
      * @param {Boolean} [urand=true] - Determines whether to use &lt;code>/dev/urandom&lt;/code> or the time stamp as the random source
      */
-    this.generateSalt = function (callback, urand=true) {
-        let source = randomSource;
-        if (!urand) source = timeSource;
+  this.generateSalt = function (callback, urand=true) {
+    let source = randomSource;
+    if (!urand) source = timeSource;
 
-        source.getRandomBytes(saltByte, (salt) => {
-            callback(salt);
-        });
-    }
-    /**
+    source.getRandomBytes(saltByte, (salt) => {
+      callback(salt);
+    });
+  };
+  /**
      * This callback takes the randomly generated salt and allows it to be handled appropriately.
      * @callback Hasher~saltCallback
      * @param {Buffer} salt - Randomly generated salt
      */
-};
+}
 
 /**
  * @method
@@ -145,14 +144,15 @@ function Hasher (iteration, encoding, hashMethod, keyLength) {
  * @param {Boolean} [urand=true] - Determines whether to use &lt;code>/dev/urandom&lt;/code> or the time stamp as the random source
  */
 Hasher.prototype.hash = function (pwd, callback, urand=true) {
-    this.generateSalt((salt) => {
-        crypto.pbkdf2(pwd, salt, this.iter, this.keylen, this.hashMethod, (err, key) => {
-            if (err) console.error(err);
-            const hashed = new Encoded(key, salt, this.iter);
-            callback(err, hashed);
-        });
-    }, urand)
+  this.generateSalt((salt) => {
+    crypto.pbkdf2(pwd, salt, this.iter, this.keylen, this.hashMethod, (err, key) => {
+      if (err) return callback(err);
+      const hashed = new Encoded(key, salt, this.iter);
+      callback(err, hashed);
+    });
+  }, urand);
 };
+
 /**
  * This callback takes the generated hash as an {@link Encoded} object. It also handles any errors from the PBKDF2 process.
  * @callback Hasher~hashCallback
@@ -162,6 +162,9 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
  */
 
 /**
+ *******************************************************************************
+ * DEPRECATED since v2.2.0
+ *******************************************************************************
  * @method
  * @memberof Hasher
  * @param {String} new_ - Given pass-phrase
@@ -178,19 +181,54 @@ Hasher.prototype.hash = function (pwd, callback, urand=true) {
  * });
  */
 Hasher.prototype.validate = function (new_, old, callback, enc) {
-    const oldHash = Encoded.parse(old, enc || this.encoding);
-    crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
-        if (err) console.error(err);
-        let valid = false;
-        if (key.length === oldHash.getKey().length &amp;&amp; key.equals(oldHash.getKey())) valid = true;
-        callback(valid);
-    });
+  const oldHash = Encoded.parse(old, enc || this.encoding);
+  crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
+    let valid = false;
+    if (key.length === oldHash.getKey().length &amp;&amp; key.equals(oldHash.getKey())) valid = true;
+    callback(valid);
+  });
 };
 /**
  * This callback handles the validation result.
  * @callback Hasher~validatorCallback
  * @param {Boolean} valid - Validation test result
  */
+
+/**
+ * @method
+ * @memberof Hasher
+ * @param {String} new_ - Given pass-phrase
+ * @param {String} old - The encoded hash string to compare to
+ * @param {String=} - The encoding scheme to be used (uses &lt;code>hasher.encoding&lt;/code> as default)
+ * @param {Hasher-validatorCallback} callback - Handles the validation result
+ * @example
+ * // Create a hash
+ * hasher.hash("password", (err, hashed) => {
+ *   const old = hashed.toString(hasher.encoding); // Generate hash string with default encoding scheme
+ *   hasher.verify("password", old, (err, valid) => {
+ *     if (err) console.error(err);
+ *     assert.equal(valid, true);
+ *   });
+ * });
+ */
+
+Hasher.prototype.verify = function (new_, old, enc, callback) {
+  if (typeof enc === "function") {
+    callback = enc;
+    enc = this.encoding;
+  }
+  if (!enc) {
+    // enc could be null if called in async
+    enc = this.encoding;
+  }
+  const oldHash = Encoded.parse(old, enc);
+  crypto.pbkdf2(new_, oldHash.getSalt(), this.iter, this.keylen, this.hashMethod, (err, key) => {
+    if (err) return callback(err);
+    let valid = false;
+    if (key.length === oldHash.getKey().length &amp;&amp; key.equals(oldHash.getKey())) valid = true;
+    callback(null, valid);
+  });
+};
 
 
 module.exports = Hasher;
@@ -239,7 +277,7 @@ module.exports = Hasher;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
 	
-		on Sun Jul 16th 2017
+		on Mon Aug 7th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
