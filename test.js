@@ -12,13 +12,18 @@ const pbkdf = require("./index.js")
   , hasherAsync = pbkdf.createAsync();
 
 const PASSWORD = "password";
-
+// Support for Windows OS
+const isWin = process.platform === "win32";
+let urandom = false;
+if (!isWin) urandom = true;
 
 describe("PBKDF2 Hasher", () => {
     
   describe("Using /dev/urandom as the random source", () => {
     
     it("Creates a hashed pass-phrase", (done) => {
+      if (isWin) done();
+
       hasher.hash(PASSWORD, (err, hashed) => {
         expect(hashed).to.be.an("object");
         expect(hashed.iter).to.be.a("number");
@@ -28,6 +33,8 @@ describe("PBKDF2 Hasher", () => {
     });
 
     it("Compares two pass-phrases", (done) => {
+      if (isWin) done();
+
       hasher.hash(PASSWORD, (err, hashed) => {
         if (err) console.error(err);
         const old = hashed.toString(hasher.encoding);
@@ -56,15 +63,24 @@ describe("PBKDF2 Hasher", () => {
 
   describe("Using Async/await", () => {
     // Using try/catch block with async/await and mocha doens't really work.  
-    it("creates a hashed pass-phrase", async () => {
-        const hashed = await hasherAsync.hash(PASSWORD);
-        expect(hashed.iter).to.be.a("number");
+    it("creates a hashed pass-phrase", () => {
+        hasherAsync.hash(PASSWORD, urandom)
+          .then(hashed => {
+            expect(hashed.iter).to.be.a("number");
+          })
+          .catch(err => { console.error(err); });
     });
 
-    it("compares two pass-phrases", async () => {
-      const old = (await hasherAsync.hash(PASSWORD)).toString(hasherAsync.encoding);
-      const valid = await hasherAsync.verify(PASSWORD, old);
-      expect(valid).to.equal(true);
+    it("compares two pass-phrases", () => {
+      hasherAsync.hash(PASSWORD, urandom)
+        .then(hashed => {
+          hashed = hashed.toString(hasher.encoding);
+          return hasherAsync.verify(PASSWORD, old, urandom);
+        })
+        .then(valid => {
+          expect(valid).to.equal(true);
+        })
+        .catch(err => { console.error(err); });
     });
 
   });
