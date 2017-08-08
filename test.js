@@ -1,8 +1,4 @@
-/* Mocha test script for PBKDF2 implementation.
- */
-
-
-
+/* Mocha test script for PBKDF2 implementation. */
 "use strcit";
 
 const mocha    = require("mocha")
@@ -19,6 +15,7 @@ const PASSWORD = "password";
 
 
 describe("PBKDF2 Hasher", () => {
+<<<<<<< HEAD
     
   describe("Using /dev/urandom as the random source", () => {
 

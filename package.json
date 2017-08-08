@@ -43,7 +43,9 @@
   "main": "index.js",
   "name": "pbkdf2-hash",
   "scripts": {
-    "doc": "jsdoc -c ./node_modules/ink-docstrap/template/jsdoc.conf.json -t ./node_modules/ink-docstrap/template -R README.md -d docs/ -r .",
+    "doc": "jsdoc -c ./jsdoc.conf.json -t ./template -R README.md -d docs/ -r .",
+    "prepublish": "npm test && npm run doc",
+    "prepublishOnly": "git add . && git commit && git push",
     "test": "mocha"
   },
   "url": "https://github.com/tylerhslee/pbkdf2-hash",

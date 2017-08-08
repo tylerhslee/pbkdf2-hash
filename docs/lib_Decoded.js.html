@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>DocStrap Source: docs/scripts/fulltext-search-ui.js</title>
+	<title>DocStrap Source: lib/Decoded.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,100 +72,110 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: docs/scripts/fulltext-search-ui.js</h1>
+		<h1 class="page-title">Source: lib/Decoded.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">window.SearcherDisplay = (function($) {
-    /**
-     * This class provides support for displaying quick search text results to users.
-     */
-    function SearcherDisplay() { }
+            class="sunlight-highlight-javascript linenums">"use strict";
 
-    SearcherDisplay.prototype.init = function() {
-        this._displayQuickSearch();
-    };
+const Encoded = require("./Encoded");
 
-    /**
-     * This method creates the quick text search entry in navigation menu and wires all required events.
-     */
-    SearcherDisplay.prototype._displayQuickSearch = function() {
-            var quickSearch = $(document.createElement("iframe")),
-                   body = $("body"),
-                   self = this;
+/**
+ * @constructor
+ * @desc Stores hashed pass-phrase as decoded Strings.
+ * @param {String} key - The decoded key
+ * @param {String} salt - The decoded salt
+ * @param {Number} iter - The number of PBKDF2 iterations
+ */
+function Decoded (key, salt, iter) {
+    this.key = key;
+    this.salt = salt;
+    this.iter = iter;
+}
 
-            quickSearch.attr("src", "quicksearch.html");
-            quickSearch.css("width", "0px");
-            quickSearch.css("height", "0px");
+/**
+ * @method
+ * @memberof Decoded
+ * @desc Encodes the Decoded object into an Encoded object.
+ * @param {String} enc - Encoding scheme to be used
+ * @returns {Encoded} The Encoded object
+ * @see Encoded
+ */
+Decoded.prototype.encode = function (enc) {
+    const encodedKey = new Buffer(this.key, enc);
+    const encodedSalt = new Buffer(this.salt, enc);
+    const iter = this.iter;
+    return new Encoded(encodedKey, encodedSalt, iter);
+}
 
-            body.append(quickSearch);
+/**
+ * @method
+ * @memberof Decoded
+ * @desc Concatenates the stored hash data into a hash string.
+ * @desc The hash string has the format `iter:salt:key`.
+ * @returns {String} The hash string
+ */
+Decoded.prototype.toString = function () {
+    return `${this.iter}:${this.salt}:${this.key}`;
+}
 
-            $(window).on("message", function(msg) {
-                var msgData = msg.originalEvent.data;
+/**
+ * @method
+ * @memberof Decoded
+ * @returns {String}
+ */
+Decoded.prototype.getKey = function () {
+    return this.key;
+}
 
-                if (msgData.msgid != "docstrap.quicksearch.done") {
-                    return;
-                }
+/**
+ * @method
+ * @memberof Decoded
+ * @param {Buffer} key
+ */
+Decoded.prototype.setKey = function (key) {
+    this.key = key;
+}
 
-                var results = msgData.results || [];
+/**
+ * @method
+ * @memberof Decoded
+ * @returns {Buffer}
+ */
+Decoded.prototype.getSalt = function () {
+    return this.salt;
+}
 
-                self._displaySearchResults(results);
-            });
+/**
+ * @method
+ * @memberof Decoded
+ * @param {Buffer} salt
+ */
+Decoded.prototype.setSalt = function (salt) {
+    this.salt = salt;
+}
 
-            function startSearch() {
-              var searchTerms = $('#search-input').prop("value");
-              if (searchTerms) {
-                quickSearch[0].contentWindow.postMessage({
-                  "searchTerms": searchTerms,
-                  "msgid": "docstrap.quicksearch.start"
-                }, "*");
-              }
-            }
+/**
+ * @method
+ * @memberof Decoded
+ * @returns {Number}
+ */
+Decoded.prototype.getIteration = function () {
+    return this.iter;
+}
 
-            $('#search-input').on('keyup', function(evt) {
-              if (evt.keyCode != 13) {
-                return;
-              }
-              startSearch();
-              return false;
-            });
-            $('#search-submit').on('click', function() {
-              startSearch();
-              return false;
-            });
-    };
+/**
+ * @method
+ * @memberof Decoded
+ * @param {Number} iter
+ */
+Decoded.prototype.setIteration = function (iter) {
+    this.iter = iter;
+}
 
-    /**
-     * This method displays the quick text search results in a modal dialog.
-     */
-    SearcherDisplay.prototype._displaySearchResults = function(results) {
-            var resultsHolder = $($("#searchResults").find(".modal-body")),
-                  fragment = document.createDocumentFragment(),
-                  resultsList = document.createElement("ul");
 
-            resultsHolder.empty();
-
-            for (var idx = 0; idx &lt; results.length; idx++) {
-                var result = results[idx],
-                       item = document.createElement("li"),
-                       link = document.createElement("a");
-
-                link.href = result.id;
-                link.innerHTML = result.title;
-
-                item.appendChild(link)
-                resultsList.appendChild(item);
-            }
-
-            fragment.appendChild(resultsList);
-            resultsHolder.append(fragment);
-
-            $("#searchResults").modal({"show": true});
-    };
-
-    return new SearcherDisplay();
-})($);
+module.exports = Decoded;
 </pre>
     </article>
 </section>

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>DocStrap Source: docs/scripts/fulltext-search-ui.js</title>
+	<title>DocStrap Source: lib/Encoded.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,100 +72,129 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: docs/scripts/fulltext-search-ui.js</h1>
+		<h1 class="page-title">Source: lib/Encoded.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">window.SearcherDisplay = (function($) {
-    /**
-     * This class provides support for displaying quick search text results to users.
-     */
-    function SearcherDisplay() { }
+            class="sunlight-highlight-javascript linenums">"use strict";
 
-    SearcherDisplay.prototype.init = function() {
-        this._displayQuickSearch();
-    };
+const Decoded = require("./Decoded");
 
-    /**
-     * This method creates the quick text search entry in navigation menu and wires all required events.
-     */
-    SearcherDisplay.prototype._displayQuickSearch = function() {
-            var quickSearch = $(document.createElement("iframe")),
-                   body = $("body"),
-                   self = this;
 
-            quickSearch.attr("src", "quicksearch.html");
-            quickSearch.css("width", "0px");
-            quickSearch.css("height", "0px");
+/**
+ * @constructor
+ * @desc Stores hashed pass-phrase as Buffers.
+ * @param {Buffer} key - The hashed key
+ * @param {Buffer} salt - The hashed salt
+ * @param {Number} iter - The Number of PBKDF2 iterations
+ */
+function Encoded (key, salt, iter) {
+    this.key = key;
+    this.salt = salt;
+    this.iter = iter;
+}
 
-            body.append(quickSearch);
+/**
+ * @method
+ * @memberof Encoded
+ * @desc Parses a hash string into an Encoded object.
+ * @param {String} pass - The hash string
+ * @param {String} enc - Encoding scheme to be used
+ * @returns {Encoded} The Encoded object
+ */
+Encoded.parse = function (pass, enc) {
+    const arr = pass.split(":");
+    const key = new Buffer(arr[2], enc);
+    const salt = new Buffer(arr[1], enc);
+    const iter = parseInt(arr[0]);
+    return new Encoded(key, salt, iter);
+};
 
-            $(window).on("message", function(msg) {
-                var msgData = msg.originalEvent.data;
+/**
+ * @method
+ * @memberof Encoded
+ * @desc Decodes the Encoded object into a Decoded object.
+ * @param {String} enc - Encoding scheme to be used
+ * @returns {Decoded} The Decoded object
+ * @see Decoded
+ */
+Encoded.prototype.decode = function (enc) {
+    const decodedKey = this.getKey().toString(enc).toUpperCase();
+    const decodedSalt = this.getSalt().toString(enc).toUpperCase();
+    const iter = this.getIteration();
+    return new Decoded(decodedKey, decodedSalt, iter);
+}
 
-                if (msgData.msgid != "docstrap.quicksearch.done") {
-                    return;
-                }
+/**
+ * @method
+ * @memberof Encoded
+ * @desc Converts the stored hash data into a hash string.
+ * @desc The hash string has the format &lt;code>iter:salt:key&lt;/code>.
+ * @param {String} enc - Encoding scheme to be used
+ * @see Decoded#toString
+ */
+Encoded.prototype.toString = function (enc) {
+    const decoded = this.decode(enc);
+    return decoded.toString();
+}
 
-                var results = msgData.results || [];
+/**
+ * @method
+ * @memberof Encoded
+ * @returns {Buffer}
+ */
+Encoded.prototype.getKey = function () {
+    return this.key;
+}
 
-                self._displaySearchResults(results);
-            });
+/**
+ * @method
+ * @memberof Encoded
+ * @param {Buffer} key
+ */
+Encoded.prototype.setKey = function (key) {
+    this.key = key;
+}
 
-            function startSearch() {
-              var searchTerms = $('#search-input').prop("value");
-              if (searchTerms) {
-                quickSearch[0].contentWindow.postMessage({
-                  "searchTerms": searchTerms,
-                  "msgid": "docstrap.quicksearch.start"
-                }, "*");
-              }
-            }
+/**
+ * @method
+ * @memberof Encoded
+ * @returns {Buffer}
+ */
+Encoded.prototype.getSalt = function () {
+    return this.salt;
+}
 
-            $('#search-input').on('keyup', function(evt) {
-              if (evt.keyCode != 13) {
-                return;
-              }
-              startSearch();
-              return false;
-            });
-            $('#search-submit').on('click', function() {
-              startSearch();
-              return false;
-            });
-    };
+/**
+ * @method
+ * @memberof Encoded
+ * @param {Buffer} salt
+ */
+Encoded.prototype.setSalt = function (salt) {
+    this.salt = salt;
+}
 
-    /**
-     * This method displays the quick text search results in a modal dialog.
-     */
-    SearcherDisplay.prototype._displaySearchResults = function(results) {
-            var resultsHolder = $($("#searchResults").find(".modal-body")),
-                  fragment = document.createDocumentFragment(),
-                  resultsList = document.createElement("ul");
+/**
+ * @method
+ * @memberof Encoded
+ * @returns {Number}
+ */
+Encoded.prototype.getIteration = function () {
+    return this.iter;
+}
 
-            resultsHolder.empty();
+/**
+ * @method
+ * @memberof Encoded
+ * @param {Number} iter
+ */
+Encoded.prototype.setIteration = function (iter) {
+    this.iter = iter;
+}
 
-            for (var idx = 0; idx &lt; results.length; idx++) {
-                var result = results[idx],
-                       item = document.createElement("li"),
-                       link = document.createElement("a");
 
-                link.href = result.id;
-                link.innerHTML = result.title;
-
-                item.appendChild(link)
-                resultsList.appendChild(item);
-            }
-
-            fragment.appendChild(resultsList);
-            resultsHolder.append(fragment);
-
-            $("#searchResults").modal({"show": true});
-    };
-
-    return new SearcherDisplay();
-})($);
+module.exports = Encoded;
 </pre>
     </article>
 </section>

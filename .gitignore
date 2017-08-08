@@ -1,6 +1,7 @@
 # npm
 node_modules/*
 .npmignore
+npm-debug.log
 
 # sublime
 *.sublime-project
